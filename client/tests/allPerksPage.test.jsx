@@ -7,7 +7,7 @@ import { renderWithRouter } from './utils/renderWithRouter.js';
 
   
 
-describe('AllPerks page (Directory)', () => {
+describe('xAllPerks page (Directory)', () => {
   test('lists public perks and responds to name filtering', async () => {
     // The seeded record gives us a deterministic expectation regardless of the
     // rest of the shared database contents.
@@ -51,7 +51,28 @@ describe('AllPerks page (Directory)', () => {
   */
 
   test('lists public perks and responds to merchant filtering', async () => {
-    // This will always fail until the TODO above is implemented.
-    expect(true).toBe(false);
+    const seededPerk = global.__TEST_CONTEXT__.seededPerk;
+
+    renderWithRouter(
+      <Routes>
+        <Route path="/explore" element={<AllPerks />} />
+      </Routes>,
+      { initialEntries: ['/explore'] }
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText(seededPerk.title)).toBeInTheDocument();
+    }
+
+    );
+
+    const merchantFilter = screen.getByRole('combobox');
+    fireEvent.change(merchantFilter, { target: { value: seededPerk.merchant } });
+
+    await waitFor(() => {
+      expect(screen.getByText(seededPerk.title)).toBeInTheDocument();
+    });
+
+    expect(screen.getByText(/showing/i)).toHaveTextContent('Showing');
   });
 });
